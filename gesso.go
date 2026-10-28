@@ -10,9 +10,12 @@
 //	…
 //	app.Handle("/api/", api)
 //
-// and the plugin, in plugins.go, is given the same app:
+// and the plugin, in plugins.go, is given the same app — collage plugin add
+// imports this package as gesso, so the framework takes another name there:
 //
-//	gessoplugin.New(gessoplugin.Options{App: api})
+//	func plugins(api *gessoapp.App) []collage.Plugin {
+//		return []collage.Plugin{gesso.New(gesso.Options{App: api})}
+//	}
 //
 // A page or an action calls the API in the same process through
 // gesso.NewLocal(api), which runs the call through the app's whole pipeline
@@ -36,7 +39,7 @@ import (
 // Name is the plugin's name.
 const Name = "elagoht/gesso"
 
-const version = "0.1.0"
+const version = "0.1.1"
 
 // Options configures the plugin. It has nothing in the application's plugin
 // configuration: the app is given in code.

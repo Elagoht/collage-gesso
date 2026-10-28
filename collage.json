@@ -3,5 +3,5 @@
   "name": "elagoht/gesso",
   "description": "A collage plugin that runs a gesso application's lifecycle: its modules start when collage starts serving and stop after collage's server has stopped.",
   "repository": "https://github.com/Elagoht/collage-gesso",
-  "setup": "The plugin needs the gesso app it runs: build it in `plugins.go` or pass it in — `api, err := gesso.New(gesso.Config{BasePath: \"/api\"}, …)` — mount it with `app.Handle(\"/api/\", api)`, and list `gesso.New(gesso.Options{App: api})`. Without an app, startup fails."
+  "setup": "The plugin runs the gesso app collage mounts, so the app must reach both `plugins.go` and the mount. Build it in `newApp` before `collage.New` — `api, err := gesso.New(gesso.Config{BasePath: \"/api\"}, …)` — pass it in with `Plugins: plugins(api)`, and mount it after with `app.Handle(\"/api/\", api)`. In `plugins.go` the framework needs another name than this plugin's `gesso`: `import gessoapp \"github.com/Elagoht/gesso\"`, `func plugins(api *gessoapp.App) []collage.Plugin`, and list `gesso.New(gesso.Options{App: api})`. Without an app, startup fails."
 }

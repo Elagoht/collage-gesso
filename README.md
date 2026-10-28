@@ -12,28 +12,54 @@ collage plugin add elagoht/gesso
 
 The plugin does not mount the app. Mount it with the application's own `Handle`,
 which keeps collage's and the plugins' middleware off an API, and give the plugin
-the same app:
+the same app. In an application `collage new` made, build the app in `newApp`,
+before `collage.New`, and hand it to `plugins`:
 
 ```go
+// main.go
+func newApp(env collage.Env) (*collage.App, error) {
+	api, err := gesso.New(gesso.Config{BasePath: "/api"}, notes.New(notes.Deps{DB: db}))
+	if err != nil {
+		return nil, err
+	}
+	…
+	app, err := collage.New(&collage.Config{
+		…
+		Plugins: plugins(api),
+	})
+	if err != nil {
+		return nil, err
+	}
+	if err := app.Handle("/api/", api); err != nil {
+		return nil, err
+	}
+	…
+}
+```
+
+`collage plugin add` imports this plugin as `gesso`, so in `plugins.go` the
+framework takes another name. `plugins` may take arguments; `collage plugin add`
+and `del` still edit its list:
+
+```go
+// plugins.go
 import (
-	gessoplugin "github.com/Elagoht/collage-gesso"
-	"github.com/Elagoht/gesso"
+	"github.com/Elagoht/collage/pkg/collage"
+	gessoapp "github.com/Elagoht/gesso"
+
+	gesso "github.com/Elagoht/collage-gesso"
 )
 
-api, err := gesso.New(gesso.Config{BasePath: "/api"}, notes.New(db))
-if err != nil {
-	return err
+func plugins(api *gessoapp.App) []collage.Plugin {
+	return []collage.Plugin{
+		gesso.New(gesso.Options{App: api}),
+	}
 }
-api.OnShutdown(func(context.Context) error { return db.Close() })
-
-app, err := collage.New(&collage.Config{
-	Plugins: []collage.Plugin{gessoplugin.New(gessoplugin.Options{App: api})},
-})
-app.Handle("/api/", api)
 ```
 
 Requires collage v0.80.0 and gesso v0.5.0 or later. There is nothing in
-`plugins-config.json`; without `Options.App`, startup fails.
+`plugins-config.json`; without `Options.App`, startup fails. Close what the app
+holds — a database — in its `OnShutdown` hooks: the plugin runs them last.
 
 ## Calling the API from pages
 
