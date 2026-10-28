@@ -1,0 +1,7 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Elagoht/collage-snippets-highlighter/main/schemas/collage-plugin-manifest.schema.json",
+  "name": "elagoht/gesso",
+  "description": "A collage plugin that runs a gesso application's lifecycle: its modules start when collage starts serving and stop after collage's server has stopped.",
+  "repository": "https://github.com/Elagoht/collage-gesso",
+  "setup": "The plugin needs the gesso app it runs: build it in `plugins.go` or pass it in — `api, err := gesso.New(gesso.Config{BasePath: \"/api\"}, …)` — mount it with `app.Handle(\"/api/\", api)`, and list `gesso.New(gesso.Options{App: api})`. Without an app, startup fails."
+}
