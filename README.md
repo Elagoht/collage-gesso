@@ -61,6 +61,21 @@ Requires collage v0.80.0 and gesso v0.5.0 or later. There is nothing in
 `plugins-config.json`; without `Options.App`, startup fails. Close what the app
 holds — a database — in its `OnShutdown` hooks: the plugin runs them last.
 
+## Starting from scratch
+
+gesso's CLI writes the API side into the site:
+
+```sh
+gesso init -dialect sqlite      # internal/api: database, migrations, OpenAPI
+gesso add module notes -fields title:string,body:text
+collage plugin add elagoht/gesso
+```
+
+`api.New(ctx, api.Config{BasePath: "/api", Database: …})` is then the app the
+two blocks above build and hand on; gesso's
+[With collage](https://github.com/Elagoht/gesso/blob/main/docs/collage.md) guide
+walks through it.
+
 ## Calling the API from pages
 
 A page's data handler or an action calls the API through an endpoint both sides
